@@ -1,10 +1,9 @@
 use clap::Parser;
-use miette::{Context, IntoDiagnostic, Result};
+use miette::{IntoDiagnostic, Result};
 use quick_xml::de::from_str;
 use repox::manifest::Manifest;
 use std::{fs::read_to_string, path::PathBuf};
-use tracing::Level;
-use tracing_subscriber::FmtSubscriber;
+use tracing::{info, info_span};
 
 /// Work-in-Progress drop-in replacement for Google's gerrit repo tool
 #[derive(Parser, Debug)]
@@ -14,17 +13,7 @@ struct Args {
 }
 
 fn main() -> Result<()> {
-    // a builder for `FmtSubscriber`.
-    let subscriber = FmtSubscriber::builder()
-        // all spans/events with a level higher than TRACE (e.g, debug, info, warn, etc.)
-        // will be written to stdout.
-        .with_max_level(Level::TRACE)
-        // completes the builder.
-        .finish();
-
-    tracing::subscriber::set_global_default(subscriber)
-        .into_diagnostic()
-        .context("setting default subscriber failed")?;
+    tracing_subscriber::fmt::init();
 
     let args = Args::parse();
 
@@ -35,7 +24,7 @@ fn main() -> Result<()> {
     gix::interrupt::init_handler(|| {}).into_diagnostic()?;
 
     for project in manifest.projects() {
-        println!("Project: {:#?}", project);
+        let _project_span = info_span!("Checking out project", name = project.name).entered();
 
         let remote = manifest
             .remotes()
@@ -43,45 +32,45 @@ fn main() -> Result<()> {
             .find(|remote| remote.name == project.remote.clone().unwrap())
             .unwrap();
 
-        println!("Remote: {:#?}", remote);
+        info!("Project remote {:#?}", remote);
 
         let repo_url = format!("{}/{}", remote.fetch, project.name);
-        println!("Repo URL: {repo_url}");
+        info!("Repo URL: {repo_url}");
         let dst = project.path.unwrap();
-        println!("Destination: {dst}");
+        info!("Destination: {dst}");
 
         std::fs::create_dir_all(&dst).into_diagnostic()?;
-        println!("Destination Created: {dst}");
+        info!("Destination Created: {dst}");
         let url = gix::url::parse(repo_url.as_str().into()).into_diagnostic()?;
-        println!("Git URL: {:#?}", url);
+        info!("Git URL: {:#?}", url);
 
-        println!("Url: {:?}", url.to_bstring());
+        info!("Url: {:?}", url.to_bstring());
         let mut prepare_clone = gix::prepare_clone(url, &dst).into_diagnostic()?;
 
-        println!("Cloning {repo_url:?} into {dst:?}...");
+        let clone_span = info_span!("Cloning {repo_url:?} into {dst:?}...").entered();
         let (mut prepare_checkout, _) = prepare_clone
             .fetch_then_checkout(gix::progress::Discard, &gix::interrupt::IS_INTERRUPTED)
             .into_diagnostic()?;
+        clone_span.exit();
 
-        println!(
-            "Checking out into {:?} ...",
-            prepare_checkout.repo().work_dir().expect("should be there")
-        );
+        let checkout_span = info_span!(
+            "Checking out project",
+            dest = ?prepare_checkout.repo().work_dir().expect("should be there")
+        )
+        .entered();
 
         let (repo, _) = prepare_checkout
             .main_worktree(gix::progress::Discard, &gix::interrupt::IS_INTERRUPTED)
             .into_diagnostic()?;
-        println!(
-            "Repo cloned into {:?}",
-            repo.work_dir().expect("directory pre-created")
-        );
+
+        checkout_span.exit();
 
         let remote = repo
             .find_default_remote(gix::remote::Direction::Fetch)
             .expect("always present after clone")
             .into_diagnostic()?;
 
-        println!(
+        info!(
             "Default remote: {} -> {}",
             remote
                 .name()
@@ -92,8 +81,6 @@ fn main() -> Result<()> {
                 .expect("should be the remote URL")
                 .to_bstring(),
         );
-
-        println!("{}\n\n", "==========");
     }
 
     Ok(())
