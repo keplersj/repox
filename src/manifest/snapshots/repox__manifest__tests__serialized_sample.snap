@@ -1,0 +1,503 @@
+---
+source: src/manifest/mod.rs
+expression: parsed
+---
+Manifest {
+    notice: None,
+    remote: Some(
+        [
+            Remote {
+                name: "yocto",
+                alias: None,
+                fetch: "https://git.yoctoproject.org",
+                pushurl: None,
+                review: None,
+                revision: None,
+            },
+            Remote {
+                name: "oe",
+                alias: None,
+                fetch: "https://github.com/openembedded",
+                pushurl: None,
+                review: None,
+                revision: None,
+            },
+            Remote {
+                name: "kraj",
+                alias: None,
+                fetch: "https://github.com/kraj",
+                pushurl: None,
+                review: None,
+                revision: None,
+            },
+            Remote {
+                name: "community",
+                alias: None,
+                fetch: "https://github.com/Freescale",
+                pushurl: None,
+                review: None,
+                revision: None,
+            },
+            Remote {
+                name: "ossystems",
+                alias: None,
+                fetch: "https://github.com/OSSystems",
+                pushurl: None,
+                review: None,
+                revision: None,
+            },
+            Remote {
+                name: "qt",
+                alias: None,
+                fetch: "https://code.qt.io/yocto",
+                pushurl: None,
+                review: None,
+                revision: None,
+            },
+            Remote {
+                name: "timesys",
+                alias: None,
+                fetch: "https://github.com/TimesysGit",
+                pushurl: None,
+                review: None,
+                revision: None,
+            },
+            Remote {
+                name: "nxp-imx",
+                alias: None,
+                fetch: "https://github.com/nxp-imx",
+                pushurl: None,
+                review: None,
+                revision: None,
+            },
+            Remote {
+                name: "imx-support",
+                alias: None,
+                fetch: "https://github.com/nxp-imx-support",
+                pushurl: None,
+                review: None,
+                revision: None,
+            },
+        ],
+    ),
+    default: None,
+    manifest_server: None,
+    remove_project: None,
+    project: Some(
+        [
+            Project {
+                annotation: None,
+                project: None,
+                copyfile: None,
+                linkfile: None,
+                name: "meta-arm",
+                path: Some(
+                    "sources/meta-arm",
+                ),
+                remote: Some(
+                    "yocto",
+                ),
+                revision: Some(
+                    "025124814e8676e46d42ec5b07220283f1bdbcd0",
+                ),
+                dest_branch: None,
+                groups: None,
+                sync_c: None,
+                sync_s: None,
+                sync_tags: None,
+                upstream: Some(
+                    "langdale",
+                ),
+                clone_depth: None,
+                force_path: None,
+            },
+            Project {
+                annotation: None,
+                project: None,
+                copyfile: None,
+                linkfile: None,
+                name: "meta-security",
+                path: Some(
+                    "sources/meta-security",
+                ),
+                remote: Some(
+                    "yocto",
+                ),
+                revision: Some(
+                    "2aa48e6f4e519abc7d6bd56da2c067309a303e80",
+                ),
+                dest_branch: None,
+                groups: None,
+                sync_c: None,
+                sync_s: None,
+                sync_tags: None,
+                upstream: Some(
+                    "langdale",
+                ),
+                clone_depth: None,
+                force_path: None,
+            },
+            Project {
+                annotation: None,
+                project: None,
+                copyfile: None,
+                linkfile: None,
+                name: "meta-virtualization",
+                path: Some(
+                    "sources/meta-virtualization",
+                ),
+                remote: Some(
+                    "yocto",
+                ),
+                revision: Some(
+                    "8857b36ebfec3d548755755b009adc491ef320ab",
+                ),
+                dest_branch: None,
+                groups: None,
+                sync_c: None,
+                sync_s: None,
+                sync_tags: None,
+                upstream: Some(
+                    "langdale",
+                ),
+                clone_depth: None,
+                force_path: None,
+            },
+            Project {
+                annotation: None,
+                project: None,
+                copyfile: None,
+                linkfile: None,
+                name: "poky",
+                path: Some(
+                    "sources/poky",
+                ),
+                remote: Some(
+                    "yocto",
+                ),
+                revision: Some(
+                    "b50f718e4cb73214e7ad298484ecdadd6cfeb866",
+                ),
+                dest_branch: None,
+                groups: None,
+                sync_c: None,
+                sync_s: None,
+                sync_tags: None,
+                upstream: Some(
+                    "langdale",
+                ),
+                clone_depth: None,
+                force_path: None,
+            },
+            Project {
+                annotation: None,
+                project: None,
+                copyfile: None,
+                linkfile: None,
+                name: "meta-openembedded",
+                path: Some(
+                    "sources/meta-openembedded",
+                ),
+                remote: Some(
+                    "oe",
+                ),
+                revision: Some(
+                    "c354f92778c1d4bcd3680af7e0fb0d1414de2344",
+                ),
+                dest_branch: None,
+                groups: None,
+                sync_c: None,
+                sync_s: None,
+                sync_tags: None,
+                upstream: Some(
+                    "langdale",
+                ),
+                clone_depth: None,
+                force_path: None,
+            },
+            Project {
+                annotation: None,
+                project: None,
+                copyfile: None,
+                linkfile: None,
+                name: "meta-clang",
+                path: Some(
+                    "sources/meta-clang",
+                ),
+                remote: Some(
+                    "kraj",
+                ),
+                revision: Some(
+                    "22f1cc330d3501923d2dc27cd3fc424c69c3a73a",
+                ),
+                dest_branch: None,
+                groups: None,
+                sync_c: None,
+                sync_s: None,
+                sync_tags: None,
+                upstream: Some(
+                    "master",
+                ),
+                clone_depth: None,
+                force_path: None,
+            },
+            Project {
+                annotation: None,
+                project: None,
+                copyfile: None,
+                linkfile: Some(
+                    [
+                        LinkFile {
+                            src: "README",
+                            dest: "README",
+                        },
+                        LinkFile {
+                            src: "setup-environment",
+                            dest: "setup-environment",
+                        },
+                    ],
+                ),
+                name: "fsl-community-bsp-base",
+                path: Some(
+                    "sources/base",
+                ),
+                remote: Some(
+                    "community",
+                ),
+                revision: Some(
+                    "60f79f7af60537146298560079ae603260f0bd14",
+                ),
+                dest_branch: None,
+                groups: None,
+                sync_c: None,
+                sync_s: None,
+                sync_tags: None,
+                upstream: Some(
+                    "master",
+                ),
+                clone_depth: None,
+                force_path: None,
+            },
+            Project {
+                annotation: None,
+                project: None,
+                copyfile: None,
+                linkfile: None,
+                name: "meta-freescale",
+                path: Some(
+                    "sources/meta-freescale",
+                ),
+                remote: Some(
+                    "community",
+                ),
+                revision: Some(
+                    "09c47379218167dda9fb0098129909a667fea2ec",
+                ),
+                dest_branch: None,
+                groups: None,
+                sync_c: None,
+                sync_s: None,
+                sync_tags: None,
+                upstream: Some(
+                    "master",
+                ),
+                clone_depth: None,
+                force_path: None,
+            },
+            Project {
+                annotation: None,
+                project: None,
+                copyfile: None,
+                linkfile: None,
+                name: "meta-freescale-3rdparty",
+                path: Some(
+                    "sources/meta-freescale-3rdparty",
+                ),
+                remote: Some(
+                    "community",
+                ),
+                revision: Some(
+                    "96c1f6a6c2cad246687cd695e0873fcc6cdde935",
+                ),
+                dest_branch: None,
+                groups: None,
+                sync_c: None,
+                sync_s: None,
+                sync_tags: None,
+                upstream: Some(
+                    "master",
+                ),
+                clone_depth: None,
+                force_path: None,
+            },
+            Project {
+                annotation: None,
+                project: None,
+                copyfile: None,
+                linkfile: None,
+                name: "meta-freescale-distro",
+                path: Some(
+                    "sources/meta-freescale-distro",
+                ),
+                remote: Some(
+                    "community",
+                ),
+                revision: Some(
+                    "1069c2f210b18cd707a4d8a82140a684a42a4ff6",
+                ),
+                dest_branch: None,
+                groups: None,
+                sync_c: None,
+                sync_s: None,
+                sync_tags: None,
+                upstream: Some(
+                    "master",
+                ),
+                clone_depth: None,
+                force_path: None,
+            },
+            Project {
+                annotation: None,
+                project: None,
+                copyfile: None,
+                linkfile: None,
+                name: "meta-browser",
+                path: Some(
+                    "sources/meta-browser",
+                ),
+                remote: Some(
+                    "ossystems",
+                ),
+                revision: Some(
+                    "e232c2e21b96dc092d9af8bea4b3a528e7a46dd6",
+                ),
+                dest_branch: None,
+                groups: None,
+                sync_c: None,
+                sync_s: None,
+                sync_tags: None,
+                upstream: None,
+                clone_depth: None,
+                force_path: None,
+            },
+            Project {
+                annotation: None,
+                project: None,
+                copyfile: None,
+                linkfile: None,
+                name: "meta-qt6",
+                path: Some(
+                    "sources/meta-qt6",
+                ),
+                remote: Some(
+                    "qt",
+                ),
+                revision: Some(
+                    "4f7d02004cd78f0fca77489deb7487bfb301ea36",
+                ),
+                dest_branch: None,
+                groups: None,
+                sync_c: None,
+                sync_s: None,
+                sync_tags: None,
+                upstream: Some(
+                    "6.4",
+                ),
+                clone_depth: None,
+                force_path: None,
+            },
+            Project {
+                annotation: None,
+                project: None,
+                copyfile: None,
+                linkfile: None,
+                name: "meta-timesys",
+                path: Some(
+                    "sources/meta-timesys",
+                ),
+                remote: Some(
+                    "timesys",
+                ),
+                revision: Some(
+                    "33a45eb06bead2509f1bf5bf46a5bbc85d66583b",
+                ),
+                dest_branch: None,
+                groups: None,
+                sync_c: None,
+                sync_s: None,
+                sync_tags: None,
+                upstream: Some(
+                    "langdale",
+                ),
+                clone_depth: None,
+                force_path: None,
+            },
+            Project {
+                annotation: None,
+                project: None,
+                copyfile: None,
+                linkfile: Some(
+                    [
+                        LinkFile {
+                            src: "tools/imx-setup-release.sh",
+                            dest: "imx-setup-release.sh",
+                        },
+                        LinkFile {
+                            src: "README",
+                            dest: "README-IMXBSP",
+                        },
+                    ],
+                ),
+                name: "meta-imx",
+                path: Some(
+                    "sources/meta-imx",
+                ),
+                remote: Some(
+                    "nxp-imx",
+                ),
+                revision: Some(
+                    "refs/tags/rel_imx_6.1.1_1.0.0",
+                ),
+                dest_branch: None,
+                groups: None,
+                sync_c: None,
+                sync_s: None,
+                sync_tags: None,
+                upstream: Some(
+                    "langdale-6.1.1-1.0.0",
+                ),
+                clone_depth: None,
+                force_path: None,
+            },
+            Project {
+                annotation: None,
+                project: None,
+                copyfile: None,
+                linkfile: None,
+                name: "meta-nxp-demo-experience",
+                path: Some(
+                    "sources/meta-nxp-demo-experience",
+                ),
+                remote: Some(
+                    "imx-support",
+                ),
+                revision: Some(
+                    "c057a681cf11923b22e16b9cdb0ad2b9187eced2",
+                ),
+                dest_branch: None,
+                groups: None,
+                sync_c: None,
+                sync_s: None,
+                sync_tags: None,
+                upstream: Some(
+                    "langdale-6.1.1-1.0.0",
+                ),
+                clone_depth: None,
+                force_path: None,
+            },
+        ],
+    ),
+    extend_project: None,
+    repo_hooks: None,
+    include: None,
+}
