@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{CommandFactory, Parser};
 use miette::Result;
 use repox::command::{init::run_init, Command};
 
@@ -17,14 +17,12 @@ fn main() -> Result<()> {
 
     match args.command {
         Command::Init(args) => run_init(args),
-        Command::Sync(_args) => todo!(),
-        Command::Upload(_args) => todo!(),
-        Command::Diff(_args) => todo!(),
-        Command::Download(_args) => todo!(),
-        Command::ForAll(_args) => todo!(),
-        Command::Prune(_args) => todo!(),
-        Command::Start(_args) => todo!(),
-        Command::Status(_args) => todo!(),
+        Command::Version => {
+            let version = Args::command().render_long_version();
+            println!("{}", version);
+
+            Ok(())
+        }
         _ => todo!(),
     }
 }
