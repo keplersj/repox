@@ -17,10 +17,6 @@ use clap::Subcommand;
 #[derive(Subcommand, Debug)]
 pub enum Command {
     /// Initialize a repo client checkout in the current directory
-    ///
-    /// From source.android.com:
-    ///
-    ///     Installs Repo in the current directory. This creates a .repo/ directory with Git repositories for the Repo source code and the standard Android manifest files.
     Init(InitArgs),
 
     /// Update working tree to the latest revision
