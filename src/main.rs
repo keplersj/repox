@@ -1,6 +1,7 @@
 use clap::{CommandFactory, Parser};
-use miette::Result;
+use miette::{Diagnostic, Result};
 use repox::command::{init::run_init, Command};
+use thiserror::Error;
 
 /// Work-in-Progress drop-in replacement for Google's gerrit repo tool
 #[derive(Parser, Debug)]
@@ -8,6 +9,13 @@ use repox::command::{init::run_init, Command};
 struct Args {
     #[command(subcommand)]
     command: Command,
+}
+
+#[derive(Debug, Error, Diagnostic)]
+#[diagnostic(code(repox::main))]
+enum CLIError {
+    #[error("The executed command has not been implemented: {0:#?}")]
+    UnimplementedCommand(Command),
 }
 
 fn main() -> Result<()> {
@@ -19,10 +27,10 @@ fn main() -> Result<()> {
         Command::Init(args) => run_init(args),
         Command::Version => {
             let version = Args::command().render_long_version();
-            println!("{}", version);
+            println!("{version}");
 
             Ok(())
         }
-        _ => todo!(),
+        command => Err(CLIError::UnimplementedCommand(command).into()),
     }
 }

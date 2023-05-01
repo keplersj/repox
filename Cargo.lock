@@ -1870,6 +1870,7 @@ dependencies = [
  "quick-xml",
  "rayon",
  "serde",
+ "thiserror",
  "tracing",
  "tracing-subscriber",
 ]
