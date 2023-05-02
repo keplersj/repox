@@ -31,6 +31,13 @@ enum CLIError {
     UnimplementedCommand(Box<Command>),
 }
 
+fn run_version() -> Result<()> {
+    let version = Args::command().render_long_version();
+    println!("{version}");
+
+    Ok(())
+}
+
 fn main() -> Result<()> {
     tracing_subscriber::fmt::init();
 
@@ -39,12 +46,7 @@ fn main() -> Result<()> {
     match args.command {
         Command::Init(args) => Ok(run_init(*args).map_err(CLIError::InitError)?),
         Command::Sync(args) => Ok(run_sync(args).map_err(CLIError::SyncError)?),
-        Command::Version => {
-            let version = Args::command().render_long_version();
-            println!("{version}");
-
-            Ok(())
-        }
+        Command::Version => run_version(),
         command => Err(CLIError::UnimplementedCommand(Box::from(command)).into()),
     }
 }

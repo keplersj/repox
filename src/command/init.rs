@@ -2,6 +2,7 @@ use crate::manifest::Manifest;
 use clap::Args;
 use miette::{Diagnostic, Result};
 use quick_xml::{de::from_str, DeError};
+use rayon::prelude::*;
 use std::fs::read_to_string;
 use thiserror::Error;
 use tracing::{info, info_span};
@@ -229,62 +230,66 @@ pub fn run_init(args: InitArgs) -> Result<(), InitError> {
 
     gix::interrupt::init_handler(|| {}).map_err(InitError::GixInterruptInitError)?;
 
-    for project in manifest.projects() {
-        let _project_span = info_span!("Checking out project", name = project.name).entered();
+    manifest
+        .projects()
+        .into_par_iter()
+        .map(|project| {
+            let _project_span = info_span!("Checking out project", name = project.name).entered();
 
-        let remote = manifest
-            .remotes()
-            .into_iter()
-            .find(|remote| remote.name == project.remote.clone().unwrap())
-            .unwrap();
+            let remote = manifest
+                .remotes()
+                .into_iter()
+                .find(|remote| remote.name == project.remote.clone().unwrap())
+                .unwrap();
 
-        info!("Project remote {:#?}", remote);
+            info!("Project remote {:#?}", remote);
 
-        let repo_url = format!("{}/{}", remote.fetch, project.name);
-        info!("Repo URL: {repo_url}");
-        let dst = project.path.unwrap();
-        info!("Destination: {dst}");
+            let repo_url = format!("{}/{}", remote.fetch, project.name);
+            info!("Repo URL: {repo_url}");
+            let dst = project.path.unwrap();
+            info!("Destination: {dst}");
 
-        std::fs::create_dir_all(&dst).map_err(InitError::CreateDirectoryError)?;
-        info!("Destination Created: {dst}");
-        let url = gix::url::parse(repo_url.as_str().into())?;
-        info!("Git URL: {:#?}", url);
+            std::fs::create_dir_all(&dst).map_err(InitError::CreateDirectoryError)?;
+            info!("Destination Created: {dst}");
+            let url = gix::url::parse(repo_url.as_str().into())?;
+            info!("Git URL: {:#?}", url);
 
-        info!("Url: {:?}", url.to_bstring());
-        let mut prepare_clone = gix::prepare_clone(url, &dst)?;
+            info!("Url: {:?}", url.to_bstring());
+            let mut prepare_clone = gix::prepare_clone(url, &dst)?;
 
-        let clone_span = info_span!("Cloning {repo_url:?} into {dst:?}...").entered();
-        let (mut prepare_checkout, _) = prepare_clone
-            .fetch_then_checkout(gix::progress::Discard, &gix::interrupt::IS_INTERRUPTED)?;
-        clone_span.exit();
+            let clone_span = info_span!("Cloning {repo_url:?} into {dst:?}...").entered();
+            let (mut prepare_checkout, _) = prepare_clone
+                .fetch_then_checkout(gix::progress::Discard, &gix::interrupt::IS_INTERRUPTED)?;
+            clone_span.exit();
 
-        let checkout_span = info_span!(
-            "Checking out project",
-            dest = ?prepare_checkout.repo().work_dir().expect("should be there")
-        )
-        .entered();
+            let checkout_span = info_span!(
+                "Checking out project",
+                dest = ?prepare_checkout.repo().work_dir().expect("should be there")
+            )
+            .entered();
 
-        let (repo, _) = prepare_checkout
-            .main_worktree(gix::progress::Discard, &gix::interrupt::IS_INTERRUPTED)?;
+            let (repo, _) = prepare_checkout
+                .main_worktree(gix::progress::Discard, &gix::interrupt::IS_INTERRUPTED)?;
 
-        checkout_span.exit();
+            checkout_span.exit();
 
-        let remote = repo
-            .find_default_remote(gix::remote::Direction::Fetch)
-            .expect("always present after clone")?;
+            let remote = repo
+                .find_default_remote(gix::remote::Direction::Fetch)
+                .expect("always present after clone")?;
 
-        info!(
-            "Default remote: {} -> {}",
-            remote
-                .name()
-                .expect("default remote is always named")
-                .as_bstr(),
-            remote
-                .url(gix::remote::Direction::Fetch)
-                .expect("should be the remote URL")
-                .to_bstring(),
-        );
-    }
+            info!(
+                "Default remote: {} -> {}",
+                remote
+                    .name()
+                    .expect("default remote is always named")
+                    .as_bstr(),
+                remote
+                    .url(gix::remote::Direction::Fetch)
+                    .expect("should be the remote URL")
+                    .to_bstring(),
+            );
 
-    Ok(())
+            Ok(())
+        })
+        .collect::<Result<(), InitError>>()
 }
