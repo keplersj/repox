@@ -17,7 +17,8 @@ use clap::Subcommand;
 #[derive(Subcommand, Debug)]
 pub enum Command {
     /// Initialize a repo client checkout in the current directory
-    Init(InitArgs),
+    // Arguments boxed at the advice of clippy
+    Init(Box<InitArgs>),
 
     /// Update working tree to the latest revision
     Sync(SyncArgs),

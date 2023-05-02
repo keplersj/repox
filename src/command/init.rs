@@ -1,8 +1,9 @@
 use crate::manifest::Manifest;
 use clap::Args;
-use miette::{IntoDiagnostic, Result};
-use quick_xml::de::from_str;
+use miette::{Diagnostic, Result};
+use quick_xml::{de::from_str, DeError};
 use std::fs::read_to_string;
+use thiserror::Error;
 use tracing::{info, info_span};
 
 /// Initialize a repo client checkout in the current directory
@@ -189,12 +190,44 @@ pub struct InitArgs {
     all_manifests: Option<bool>,
 }
 
-pub fn run_init(args: InitArgs) -> Result<()> {
-    let manifest_contents = read_to_string(args.manifest_path).into_diagnostic()?;
+#[derive(Debug, Error, Diagnostic)]
+#[diagnostic(code(repox::command::init))]
+pub enum InitError {
+    #[error("Could not read manifest file")]
+    ManifestReadError(#[source] std::io::Error),
 
-    let manifest: Manifest = from_str(&manifest_contents).into_diagnostic()?;
+    #[error("An error occurred initializing gix's interrupt handler")]
+    GixInterruptInitError(#[source] std::io::Error),
 
-    gix::interrupt::init_handler(|| {}).into_diagnostic()?;
+    #[error("An error occurred while creating a destination directory")]
+    CreateDirectoryError(#[source] std::io::Error),
+
+    #[error(transparent)]
+    XmlDeserializationError(#[from] DeError),
+
+    #[error(transparent)]
+    GixUrlParseError(#[from] gix::url::parse::Error),
+
+    #[error(transparent)]
+    GixCloneError(#[from] gix::clone::Error),
+
+    #[error(transparent)]
+    GixFetchError(#[from] gix::clone::fetch::Error),
+
+    #[error(transparent)]
+    GixCheckoutError(#[from] gix::clone::checkout::main_worktree::Error),
+
+    #[error(transparent)]
+    GixRemoteError(#[from] gix::remote::find::existing::Error),
+}
+
+pub fn run_init(args: InitArgs) -> Result<(), InitError> {
+    let manifest_contents =
+        read_to_string(args.manifest_path).map_err(InitError::ManifestReadError)?;
+
+    let manifest: Manifest = from_str(&manifest_contents)?;
+
+    gix::interrupt::init_handler(|| {}).map_err(InitError::GixInterruptInitError)?;
 
     for project in manifest.projects() {
         let _project_span = info_span!("Checking out project", name = project.name).entered();
@@ -212,18 +245,17 @@ pub fn run_init(args: InitArgs) -> Result<()> {
         let dst = project.path.unwrap();
         info!("Destination: {dst}");
 
-        std::fs::create_dir_all(&dst).into_diagnostic()?;
+        std::fs::create_dir_all(&dst).map_err(InitError::CreateDirectoryError)?;
         info!("Destination Created: {dst}");
-        let url = gix::url::parse(repo_url.as_str().into()).into_diagnostic()?;
+        let url = gix::url::parse(repo_url.as_str().into())?;
         info!("Git URL: {:#?}", url);
 
         info!("Url: {:?}", url.to_bstring());
-        let mut prepare_clone = gix::prepare_clone(url, &dst).into_diagnostic()?;
+        let mut prepare_clone = gix::prepare_clone(url, &dst)?;
 
         let clone_span = info_span!("Cloning {repo_url:?} into {dst:?}...").entered();
         let (mut prepare_checkout, _) = prepare_clone
-            .fetch_then_checkout(gix::progress::Discard, &gix::interrupt::IS_INTERRUPTED)
-            .into_diagnostic()?;
+            .fetch_then_checkout(gix::progress::Discard, &gix::interrupt::IS_INTERRUPTED)?;
         clone_span.exit();
 
         let checkout_span = info_span!(
@@ -233,15 +265,13 @@ pub fn run_init(args: InitArgs) -> Result<()> {
         .entered();
 
         let (repo, _) = prepare_checkout
-            .main_worktree(gix::progress::Discard, &gix::interrupt::IS_INTERRUPTED)
-            .into_diagnostic()?;
+            .main_worktree(gix::progress::Discard, &gix::interrupt::IS_INTERRUPTED)?;
 
         checkout_span.exit();
 
         let remote = repo
             .find_default_remote(gix::remote::Direction::Fetch)
-            .expect("always present after clone")
-            .into_diagnostic()?;
+            .expect("always present after clone")?;
 
         info!(
             "Default remote: {} -> {}",
