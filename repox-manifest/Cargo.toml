@@ -8,4 +8,4 @@ serde = { version = "1.0.160", features = ["derive"] }
 
 [dev-dependencies]
 insta = "1.29.0"
-quick-xml = { version = "0.28.2", features = ["serialize"] }
+quick-xml = { version = "0.31.0", features = ["serialize"] }
