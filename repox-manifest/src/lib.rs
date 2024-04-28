@@ -92,7 +92,7 @@ impl Manifest {
 
 #[cfg(test)]
 mod tests {
-    use crate::manifest::Manifest;
+    use crate::Manifest;
     use insta::assert_debug_snapshot;
     use quick_xml::de::from_str;
 

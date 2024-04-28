@@ -1,0 +1,11 @@
+[package]
+name = "repox-manifest"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = { version = "1.0.160", features = ["derive"] }
+
+[dev-dependencies]
+insta = "1.29.0"
+quick-xml = { version = "0.28.2", features = ["serialize"] }

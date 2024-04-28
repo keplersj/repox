@@ -1,2 +1,5 @@
 /target
 /sources
+/test
+mutants.out*
+perf.data*

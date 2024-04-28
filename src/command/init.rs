@@ -1,8 +1,8 @@
-use crate::manifest::Manifest;
 use clap::Args;
 use miette::{Diagnostic, Result};
 use quick_xml::{de::from_str, DeError};
 use rayon::prelude::*;
+use repox_manifest::Manifest;
 use std::fs::read_to_string;
 use thiserror::Error;
 use tracing::{info, info_span};
