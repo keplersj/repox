@@ -1,5 +1,6 @@
 ---
-source: src/manifest/mod.rs
+source: repox-manifest/src/lib.rs
+assertion_line: 105
 expression: parsed
 ---
 Manifest {
