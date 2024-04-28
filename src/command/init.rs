@@ -228,8 +228,6 @@ pub fn run_init(args: InitArgs) -> Result<(), InitError> {
 
     let manifest: Manifest = from_str(&manifest_contents)?;
 
-    gix::interrupt::init_handler(|| {}).map_err(InitError::GixInterruptInitError)?;
-
     manifest
         .projects()
         .into_par_iter()
