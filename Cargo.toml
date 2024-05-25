@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.2.2", features = ["derive"] }
-gix = { version = "0.62.0", features = [
+gix = { version = "0.63.0", features = [
     "blocking-network-client",
     "blocking-http-transport-reqwest-rust-tls",
 ] }
